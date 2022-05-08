@@ -8,14 +8,14 @@ Please refer to [7] for context on Gaussian quadrature.
 We use the original Golub-Welsch algorithm [1], since it is general to many
 quadratures and allows computing for low orders n.
 
-The original algorithm ALGOL routines can be found in [2]. They were also
+The original ALGOL60 routines can be found in [2]. They were also
 transposed into Matlab by Meurant [5] as part of the book [4]. This
 latest version [5] is the most useful for transposing the algorithm into
 other languages.
 
 We observed that many modern implementations run the full eigenvectors
 computation, instead of the specialized QR algorithm used by Golub
-and Welsch [1] which only computes the first component of each eigenvector.
+and Welsch [1], which only computes the first component of each eigenvector.
 This could be because the algorithm is very succinctly expressed when
 leveraging an existing eigenvectors routine. However this is a bit of a shame
 since it turns an O(n^2) algorithm into an O(n^3) one.
@@ -26,9 +26,10 @@ weights `w` with respect to some weight function, with `n` quadrature
 points.
 
 We need to know two things:
-* The coefficients `a`, `b`, `c` of the three-term recurrence for the polynomial
-  that corresponds to our weight function. Tables of such coefficients are found
-  in [6], we use the same conventions. `a`, `b`, and `c` are of length `n`.
+* The coefficients `a`, `b`, `c` of the three-term recurrence for the
+  polynomials which correspond to our weight function. Tables of such
+  coefficients are found in [6], we use the same conventions. `a`, `b`, and `c`
+  are of length `n`.
 * The zero moment of the weight function (eg. 2 for Legendre).
 
 For instance, let's say we want to compute the Gauss-Legendre quadrature with
@@ -125,3 +126,7 @@ Gauss-Laguerre example from [1] (alpha = -0.75, n=10).
 6. [NIST Digital Library of Mathematical Functions - 18.9](https://dlmf.nist.gov/18.9)
 7. [Wikipedia - Gaussian Quadrature](https://en.wikipedia.org/w/index.php?title=Gaussian_quadrature&oldid=1083985268)
 8. [Wikipedia - Gauss-Legendre quadrature](https://en.wikipedia.org/w/index.php?title=Gauss–Legendre_quadrature&oldid=1012677738)
+
+## See also
+* [FastGaussQuadrature.jl](https://github.com/JuliaApproximation/FastGaussQuadrature.jl)
+* [GaussQuadrature.jl](https://github.com/billmclean/GaussQuadrature.jl)
