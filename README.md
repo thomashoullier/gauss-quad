@@ -66,7 +66,7 @@ We compute the nodes of weights of the quadrature with:
 The nodes are sorted in ascending order, along with corresponding weights.
 The values for Gauss-Legendre, n=5, can be checked at [8].
 
-```common-lisp
+```text
 Nodes: #(-0.9061798459386642d0 -0.5384693101056827d0 2.220446049250313d-16
          0.5384693101056829d0 0.906179845938664d0)
 Weights: #(0.23692688505618867d0 0.47862867049936786d0 0.5688888888888896d0
