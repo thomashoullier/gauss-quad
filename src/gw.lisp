@@ -1,4 +1,5 @@
 ;;;; Golub-Welsch algorithm, transposed from the original ALGOL.
+(in-package :gauss-quad)
 
 (defun abc-to-symm (acoef bcoef ccoef)
   "Return symmetrized coefficients a, b from the three-term recurrence
