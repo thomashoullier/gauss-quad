@@ -106,20 +106,3 @@
       (setf tj (map 'vector #'car zipped-results)
             w (map 'vector #'cadr zipped-results)))
     (values tj w)))
-
-;;; Manual test with Legendre polynomials
-(let* ((muzero 2d0) (n 5)
-       (acoef (make-array n :element-type 'double-float))
-       (bcoef (make-array n :element-type 'double-float))
-       (ccoef (make-array n :element-type 'double-float))
-       (asymm) (bsymm)
-       (tj) (w))
-  (loop for i from 0 upto (1- n) do
-    (psetf (aref acoef i) (/ (1+ (* 2d0 i)) (1+ i))
-           (aref bcoef i) 0d0
-           (aref ccoef i) (/ i (+ 1d0 i))))
-  ;; Convert to symmetric
-  (multiple-value-setq (asymm bsymm) (abc-to-symm acoef bcoef ccoef))
-  (format t "~&Legendre polynomials, n = ~A~%" n)
-  (multiple-value-setq (tj w) (gw asymm bsymm n muzero))
-  (format t "~&Nodes: ~A~%Weights: ~A~%" tj w))
