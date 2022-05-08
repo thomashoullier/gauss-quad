@@ -1,9 +1,28 @@
 ;;;; Golub-Welsch algorithm, transposed from the original ALGOL.
 
+(defun abc-to-symm (acoef bcoef ccoef)
+  "Return symmetrized coefficients a, b from the three-term recurrence
+   coefficients arrays of size n.
+   Pn(x) = (An.x + Bn).Pn-1(x) - Cn.Pn-2(x)"
+  (let ((a (alexandria:copy-array acoef))
+        (b (alexandria:copy-array bcoef))
+        (n (length acoef)))
+    (if (equalp acoef ccoef)
+        ;; Already symmetric
+        (values a (subseq b 0 (1- n)))
+        ;; Symmetrize
+        (let ((ai 0d0) (c (alexandria:copy-array ccoef)))
+          (loop for i from 0 below (1- n) do
+            (setf ai (aref a i)
+                  (aref a i) (/ (- (aref b i)) ai)
+                  (aref b i) (sqrt (/ (aref c (1+ i)) (* ai (aref a (1+ i)))))))
+          (setf (aref a (1- n)) (/ (- (aref b (1- n))) (aref a (1- n))))
+          (values a (subseq b 0 (1- n)))))))
+
 (defun gw (a-coeffs b-coeffs n muzero)
   "a, b are the coefficients in the symmetric matrix J.
-   a is of size N+1, the index 0 is unused.
-   b if of size N, the index 0 is unused.
+   a is of size N
+   b if of size N-1
    n is the order of the quadrature scheme.
    Return tj and w, the nodes and weights of the computed quadradure scheme."
   (let ((w (make-array (1+ n) :element-type 'double-float))  ; Weights
@@ -89,11 +108,17 @@
 
 ;;; Manual test with Legendre polynomials
 (let* ((muzero 2d0) (n 5)
-       (acoeffs (make-array n :element-type 'double-float))
-       (bcoeffs (make-array (1- n) :element-type 'double-float))
+       (acoef (make-array n :element-type 'double-float))
+       (bcoef (make-array n :element-type 'double-float))
+       (ccoef (make-array n :element-type 'double-float))
+       (asymm) (bsymm)
        (tj) (w))
-  (loop for i from 1 upto (1- n) do
-    (setf (aref bcoeffs (1- i)) (/ i (sqrt (1- (* 4d0 (expt i 2)))))))
+  (loop for i from 0 upto (1- n) do
+    (psetf (aref acoef i) (/ (1+ (* 2d0 i)) (1+ i))
+           (aref bcoef i) 0d0
+           (aref ccoef i) (/ i (+ 1d0 i))))
+  ;; Convert to symmetric
+  (multiple-value-setq (asymm bsymm) (abc-to-symm acoef bcoef ccoef))
   (format t "~&Legendre polynomials, n = ~A~%" n)
-  (multiple-value-setq (tj w) (gw acoeffs bcoeffs n muzero))
+  (multiple-value-setq (tj w) (gw asymm bsymm n muzero))
   (format t "~&Nodes: ~A~%Weights: ~A~%" tj w))
