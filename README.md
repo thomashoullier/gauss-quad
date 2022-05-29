@@ -21,6 +21,15 @@ leveraging an existing eigenvectors routine. However this is a bit of a shame
 since it turns an O(n^2) algorithm into an O(n^3) one.
 
 ## Usage
+### Common polynomials
+We define a few shortcuts for computing quadrature schemes for common
+common polynomials. These functions are detailed in a section below.
+
+```common-lisp
+(legendre n)
+```
+
+### Other polynomials
 Say we want to compute the Gaussian quadrature nodes (roots) `tj` and
 weights `w` with respect to some weight function, with `n` quadrature
 points.
@@ -74,6 +83,11 @@ Weights: #(0.23692688505618867d0 0.47862867049936786d0 0.5688888888888896d0
 ```
 
 ## Functions
+### Legendre
+**legendre** n => tj w
+
+Compute the Gauss-Legendre quadrature nodes and weights with n points.
+
 ### abc-to-symm
 **abc-to-symm** a b c => asymm bsymm
 

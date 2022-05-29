@@ -5,7 +5,8 @@
   :components
   ((:module "src"
     :components ((:file "package")
-                 (:file "gw" :depends-on ("package")))))
+                 (:file "gw" :depends-on ("package"))
+                 (:file "short" :depends-on ("gw")))))
   :in-order-to ((test-op (test-op "gauss-quad/test"))))
 
 (defsystem gauss-quad/test
