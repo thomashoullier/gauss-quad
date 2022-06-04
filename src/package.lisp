@@ -1,5 +1,5 @@
 (defpackage :gauss-quad
-  (:use :cl)
+  (:use :cl :computable-reals)
   (:export #:gw
            #:abc-to-symm
            #:legendre))

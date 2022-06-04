@@ -1,12 +1,13 @@
 (defsystem gauss-quad
   :name "gauss-quad"
   :author "Thomas HOULLIER"
-  :depends-on ("alexandria")
+  :depends-on ("alexandria" "computable-reals")
   :components
   ((:module "src"
     :components ((:file "package")
                  (:file "gw" :depends-on ("package"))
-                 (:file "short" :depends-on ("gw")))))
+                 (:file "gw-arbprec" :depends-on ("package"))
+                 (:file "short" :depends-on ("gw" "gw-arbprec")))))
   :in-order-to ((test-op (test-op "gauss-quad/test"))))
 
 (defsystem gauss-quad/test

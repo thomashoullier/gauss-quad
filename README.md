@@ -116,6 +116,8 @@ The included validations are Gauss-Legendre (n from 1 to 5) and the
 Gauss-Laguerre example from [1] (alpha = -0.75, n=10).
 
 ## Dependencies
+TODO: computable-reals
+
 * `gauss-quad`
   * [alexandria](https://github.com/keithj/alexandria)
 * `gauss-quad/test`
