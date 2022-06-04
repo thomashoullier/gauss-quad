@@ -1,18 +1,23 @@
 ;;;; Golub-Welsch algorithm, transposed from the original ALGOL.
 (in-package :gauss-quad)
 
+(defun coerce-vec-double (vec)
+  "Coerce a vector into a vector with double-float elements."
+  (map 'vector (lambda (x) (coerce x 'double-float)) vec))
+
 (defun abc-to-symm (acoef bcoef ccoef)
   "Return symmetrized coefficients a, b from the three-term recurrence
    coefficients arrays of size n.
-   Pn(x) = (An.x + Bn).Pn-1(x) - Cn.Pn-2(x)"
-  (let ((a (alexandria:copy-array acoef))
-        (b (alexandria:copy-array bcoef))
+   Pn(x) = (An.x + Bn).Pn-1(x) - Cn.Pn-2(x).
+   Double-float computations."
+  (let ((a (coerce-vec-double acoef))
+        (b (coerce-vec-double bcoef))
         (n (length acoef)))
     (if (equalp acoef ccoef)
         ;; Already symmetric
         (values a (subseq b 0 (1- n)))
         ;; Symmetrize
-        (let ((ai 0d0) (c (alexandria:copy-array ccoef)))
+        (let ((ai 0d0) (c (coerce-vec-double ccoef)))
           (loop for i from 0 below (1- n) do
             (setf ai (aref a i)
                   (aref a i) (/ (- (aref b i)) ai)
@@ -25,7 +30,8 @@
    a is of size N
    b if of size N-1
    n is the order of the quadrature scheme.
-   Return tj and w, the nodes and weights of the computed quadradure scheme."
+   Return tj and w, the nodes and weights of the computed quadradure scheme.
+   Double-float computations."
   (let ((w (make-array (1+ n) :element-type 'double-float))  ; Weights
         (tj (make-array (1+ n) :element-type 'double-float)) ; Nodes
         (a (make-array (1+ n) :element-type 'double-float))
@@ -33,7 +39,8 @@
         (eps 0d0)                       ; Relative zero tolerance
         (lambd 0d0) (lambd1 0d0) (lambd2 0d0) (rho 0d0))
     ;; Copy and index shifting by 1 of coefficients a b
-    (setf (subseq a 1) a-coeffs (subseq b 1) b-coeffs)
+    (psetf (subseq a 1) (coerce-vec-double a-coeffs)
+           (subseq b 1) (coerce-vec-double b-coeffs))
     ;; Find maximum row sum norm: compute eps
     (let ((norm 0d0))
       (setf (aref b 0) 0d0)

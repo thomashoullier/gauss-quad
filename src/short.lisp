@@ -5,9 +5,9 @@
 (defun common-abc (n abc-funs)
   "Generate tables of recurrence relation coefficients of size n.
    The functions provided take only i as a parameter from 0 upto n-1."
-  (let ((a (make-array n :element-type 'double-float))
-        (b (make-array n :element-type 'double-float))
-        (c (make-array n :element-type 'double-float)))
+  (let ((a (make-array n))
+        (b (make-array n))
+        (c (make-array n)))
     (loop for i from 0 upto (1- n) do
       (loop for coefs in (list a b c)
             for coef-fun in abc-funs do
@@ -25,12 +25,12 @@
     (values tj w)))
 
 ;;; Legendre
-(defvar *legendre-muzero* 2d0)
+(defvar *legendre-muzero* 2)
 
 ;; Recurrence relation coefficients
-(defun legendre-an (n) (/ (1+ (* 2d0 n)) (1+ n)))
-(defun legendre-bn (n) (declare (ignore n)) 0d0)
-(defun legendre-cn (n) (/ n (+ 1d0 n)))
+(defun legendre-an (n) (/ (1+ (* 2 n)) (1+ n)))
+(defun legendre-bn (n) (declare (ignore n)) 0)
+(defun legendre-cn (n) (/ n (+ 1 n)))
 (defvar *legendre-abc-funs* (list #'legendre-an #'legendre-bn #'legendre-cn))
 
 (defun legendre (n)
