@@ -1,5 +1,10 @@
 (defpackage :gauss-quad
-  (:use :cl :computable-reals)
+  (:use :cl)
   (:export #:gw
            #:abc-to-symm
-           #:legendre))
+           ;; Common quadrature schemes
+           #:legendre
+           ;; For other packages
+           *legendre-abc-funs*
+           *legendre-muzero*
+           #:common-abc))
