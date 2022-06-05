@@ -81,6 +81,7 @@
    n is the order of the quadrature scheme.
    sigbits is the number of significant bits used to compute
    the epsilon in comparisons (eg. 53 for double-float).
+   muzero must be a creal.
    Return tj and w, the nodes and weights of the computed quadradure scheme.
    creal computations."
   (let ((w (make-array (1+ n) :element-type 'creal))  ; Weights
@@ -89,7 +90,6 @@
         (b (make-array n :element-type 'creal))
         (eps 0)                       ; Relative zero tolerance
         (numeps (/ 1 (expt 2 sigbits)))
-        ;; TODO: convert muzero to creal?
         (lambd 0) (lambd1 0) (lambd2 0) (rho 0))
     ;; Copy and index shifting by 1 of coefficients a b
     (psetf (subseq a 1) a-coeffs
@@ -148,6 +148,10 @@
             (loop for j from k upto m1 do
               (setf r (sqrt-r (+r (sqr-r cj) (sqr-r (aref b (1- j)))))
                     st (/r cj r) ct (/r (aref b (1- j)) r) aj (aref a j))
+              ;; Intermediate approximation for performance.
+              (setf r (rational-approx-r r sigbits)
+                    st (rational-approx-r st sigbits)
+                    ct (rational-approx-r ct sigbits))
               (when (> j 1) (setf (aref b (1- j)) r))
               (when (< j (1- n))
                 (setf cj (*r (aref b (1+ j)) st)
@@ -161,12 +165,13 @@
                (aref a (1+ j)) (+r aj (aref a (1+ j)) (-r (aref a j)))
                (aref w j) (+r (*r wj ct) (*r (aref w (1+ j)) st))
                (aref w (1+ j)) (-r (*r wj st) (*r (aref w (1+ j)) ct))))))))
+    ;; Converting nodes and weights to ratio with sigbits precision.
+    (psetf tj (map 'vector (lambda (x) (rational-approx-r x sigbits)) tj)
+           w (map 'vector (lambda (x) (rational-approx-r x sigbits)) w))
     ;; Sort the nodes in ascending order (along with weights)
     (let ((zipped-results (map 'list (lambda (x y) (list x y))
                                (subseq tj 1) (subseq w 1))))
-      (setf zipped-results
-            (sort zipped-results (lambda (x y) (<-r sigbits x y)) :key #'car))
+      (setf zipped-results (sort zipped-results #'< :key #'car))
       (setf tj (map 'vector #'car zipped-results)
             w (map 'vector #'cadr zipped-results)))
-    ;; TODO: Output a ratio with sigbits instead of creal.
     (values tj w)))
