@@ -26,7 +26,7 @@
           (setf (aref a (1- n)) (/r (-r (aref b (1- n))) (aref a (1- n))))
           (values a (subseq b 0 (1- n)))))))
 
-(defun gw-creal (a-coeffs b-coeffs n muzero sigbits)
+(defun gw-creal (asymm bsymm n muzero sigbits)
   "a, b are the coefficients in the symmetric matrix J.
    a is of size N
    b if of size N-1
@@ -44,8 +44,8 @@
         (numeps (/ 1 (expt 2 sigbits)))
         (lambd 0) (lambd1 0) (lambd2 0) (rho 0))
     ;; Copy and index shifting by 1 of coefficients a b
-    (psetf (subseq a 1) a-coeffs
-           (subseq b 1) b-coeffs)
+    (psetf (subseq a 1) asymm
+           (subseq b 1) bsymm)
     ;; Find maximum row sum norm: compute eps
     (let ((norm 0))
       (setf (aref b 0) 0)

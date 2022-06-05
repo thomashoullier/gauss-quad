@@ -25,7 +25,7 @@
           (setf (aref a (1- n)) (/ (- (aref b (1- n))) (aref a (1- n))))
           (values a (subseq b 0 (1- n)))))))
 
-(defun gw (a-coeffs b-coeffs n muzero)
+(defun gw (asymm bsymm n muzero)
   "a, b are the coefficients in the symmetric matrix J.
    a is of size N
    b if of size N-1
@@ -39,8 +39,8 @@
         (eps 0d0)                       ; Relative zero tolerance
         (lambd 0d0) (lambd1 0d0) (lambd2 0d0) (rho 0d0))
     ;; Copy and index shifting by 1 of coefficients a b
-    (psetf (subseq a 1) (coerce-vec-double a-coeffs)
-           (subseq b 1) (coerce-vec-double b-coeffs))
+    (psetf (subseq a 1) (coerce-vec-double asymm)
+           (subseq b 1) (coerce-vec-double bsymm))
     ;; Find maximum row sum norm: compute eps
     (let ((norm 0d0))
       (setf (aref b 0) 0d0)

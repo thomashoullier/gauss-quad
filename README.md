@@ -2,6 +2,9 @@
 The system `gauss-quad` is aimed at computing nodes and weights for Gaussian
 quadrature schemes, with respect to an arbitrary weight function.
 
+The system `gauss-quad/arbprec` implements the routines with arbitrary precision
+computations.
+
 Please refer to [7] for context on Gaussian quadrature.
 
 ## Implementation
@@ -21,6 +24,11 @@ leveraging an existing eigenvectors routine. However this is a bit of a shame
 since it turns an O(n^2) algorithm into an O(n^3) one.
 
 ## Usage
+We present the usage of `gauss-quad`. The computations in this system are
+performed with `double-float` numbers. The routines for `gauss-quad/arbprec`
+are a transposition of the routines for `gauss-quad` with an additional
+argument for the number of significant bits.
+
 ### Common polynomials
 We define a few shortcuts for computing quadrature schemes for common
 common polynomials. These functions are detailed in a section below.
@@ -29,7 +37,7 @@ common polynomials. These functions are detailed in a section below.
 (legendre n)
 ```
 
-### Other polynomials
+### Low level routines for the general case
 Say we want to compute the Gaussian quadrature nodes (roots) `tj` and
 weights `w` with respect to some weight function, with `n` quadrature
 points.
@@ -83,12 +91,13 @@ Weights: #(0.23692688505618867d0 0.47862867049936786d0 0.5688888888888896d0
 ```
 
 ## Functions
-### Legendre
+### `gauss-quad`
+#### Legendre
 **legendre** n => tj w
 
 Compute the Gauss-Legendre quadrature nodes and weights with n points.
 
-### abc-to-symm
+#### abc-to-symm
 **abc-to-symm** a b c => asymm bsymm
 
 Perform a symmetrization on the three-term recurrence coefficients a, b, c.
@@ -96,7 +105,7 @@ a, b, c are vectors of size n.
 Returns asymm and bsymm, the components of the symmetric tridiagonal matrix
 constructed in [1].
 
-### gw
+#### gw
 **gw** asymm bsymm n muzero => tj w
 
 Compute the quadrature rule defined by asymm and bsymm the symmetrized
@@ -105,24 +114,50 @@ n the number of quadrature points.
 Returns the vectors of nodes (roots) tj, sorted in ascending order, along
 with corresponding weights w.
 
+### `gauss-quad/arbprec`
+The argument sigbits is the number of significant bits used to carry out
+the computations. Note that this is not the guaranteed accuracy of the
+results for the routines below as intermediate approximations are done
+for the sake of performance. Setting sigbits to 53 is roughly equivalent to
+computing with the `gauss-quad` system in double-float precision.
+
+The nodes and weights computed are given as a `ratio`.
+
+#### Legendre
+**legendre-creal** n sigbits => tj w
+
+#### abc-to-symm-creal
+**abc-to-symm-creal** a b c => asymm bsymm
+
+In the general case, asymm and bsymm are `creal` numbers.
+
+#### gw-creal
+**gw-creal** asymm bsymm n muzero sigbits => tj w
+
+muzero must be of type `creal`.
+
 ## Tests
 To launch tests, run:
 
 ```common-lisp
 (asdf:test-system "gauss-quad")
+(asdf:test-system "gauss-quad/arbprec")
 ```
 
-The included validations are Gauss-Legendre (n from 1 to 5) and the
-Gauss-Laguerre example from [1] (alpha = -0.75, n=10).
+The included validations are:
+* `gauss-quad`:
+  * Gauss-Legendre (n from 1 to 5)
+  * Gauss-Laguerre example from [1] (alpha = -0.75, n=10).
+* `gauss-quad/arbprec`:
+  * Gauss-Legendre (n from 1 to 5)
 
 ## Dependencies
-TODO: computable-reals
-
 * `gauss-quad`
   * [alexandria](https://github.com/keithj/alexandria)
 * `gauss-quad/test`
   * [rove](https://github.com/fukamachi/rove)
-
+* `gauss-quad/arbprec`
+  * [computable-reals](https://github.com/stylewarning/computable-reals)
 
 ## References
 1. G. H. Golub and J. H. Welsch, “Calculation of Gauss quadrature
